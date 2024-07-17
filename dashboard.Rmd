@@ -1,0 +1,56 @@
+---
+title: "Credit Card Data Visualizer"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+librarian::shelf(flexdashboard,shiny,dplyr,plotly,shiny,logr,bslib)
+```
+
+
+```{r data}
+
+data <- read.csv("BankChurners.csv")
+
+Categorical.Variables = c("Gender", "Education_Level", "Marital_Status")
+
+Numeric.Variables = c("Customer_Age", "Total_Trans_Ct", "Credit_Limit")
+
+```
+
+
+Column {.sidebar data-width=200}
+-------------------------------------------------------------------
+```{r}
+
+selectInput(inputId="categorical_variable", label = "Select Categorical Variable:", choices = Categorical.Variables, selected = Categorical.Variables[1])
+
+selectInput(inputId="numeric_variable", label = "Select Numeric Variable:", choices = Numeric.Variables, selected = Numeric.Variables[1])
+
+```
+
+Column {data-width=400}
+-------------------------------------------------------------------
+
+### **Box plot** shows the relationship between categorical and numeric variables
+```{r}
+
+renderPlotly({
+  plot_ly(data,
+          x = ~data[[input$numeric_variable]],
+          color = ~data[[input$categorical_variable]],
+          colors = "Paired",
+          type = "box") %>%
+    layout(title = "",
+           xaxis = list(title = input$numeric_variable ,  
+                        zeroline = FALSE),
+           yaxis = list(title =  input$categorical_variable))           
+})
+
+
+```
+
